@@ -3,14 +3,21 @@ using UnityEngine;
 
 public class CoinScript : MonoBehaviour
 {
+    private static int countCoin;
     private float minOffset = 100f;
     private float minDistanse = 50f;
     private Animator animator;
     private Collider[] colliders;
+    private AudioSource catchSound;
+
+    [SerializeField]
+    private TMPro.TextMeshProUGUI coinTMP;
     void Start()
     {
         animator = GetComponent<Animator>();
         colliders = GetComponents<Collider>();
+        catchSound = GetComponent<AudioSource>();
+        countCoin = 0;
     }
 
     void Update()
@@ -22,11 +29,32 @@ public class CoinScript : MonoBehaviour
     {
         if (other.name == "Character")
         {
-            animator.SetBool("IsCollected", true);
-            Debug.Log("+1 Coin");
+            if (colliders[0].bounds.Intersects(other.bounds))
+            {
+                animator.SetInteger("CoinState", 2);
+                catchSound.Play();
+                countCoin++;
+                coinTMP.text = countCoin.ToString();
+                ReplaceCoin();
+            }
+            else
+            {
+                animator.SetInteger("CoinState", 1);
+            }
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.name == "Character")
+        {
+            if (colliders[1].bounds.Intersects(other.bounds))
+            {
+                animator.SetInteger("CoinState", 0);
+            }
+           
+        }
+    }
     public void ReplaceCoin()
     {
         Vector3 newPosition;
@@ -45,6 +73,6 @@ public class CoinScript : MonoBehaviour
         float terraitHeight = Terrain.activeTerrain.SampleHeight(newPosition);
         newPosition.y = terraitHeight + Random.Range(2f, 18f);
         this.transform.position = newPosition;
-        animator.SetBool("IsCollected", false);
+        animator.SetInteger("CoinState", 0);
     }
 }
