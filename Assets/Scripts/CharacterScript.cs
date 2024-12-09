@@ -9,8 +9,8 @@ public class CharacterScript : MonoBehaviour
     private float speedFactor;
     private bool isMoving = false;
     private Animator animator;
-    //[SerializeField]
-    //private ParticleSystem effects;
+    [SerializeField]
+    private ParticleSystem effects;
 
     private float burstPeriod = 5f;
     private float burstLeft;
@@ -23,6 +23,7 @@ public class CharacterScript : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         GameState.AddListener(nameof(GameState.isBurst), OnBurstChanged);
+        effects.Stop();
     }
 
     void Update()
@@ -34,7 +35,7 @@ public class CharacterScript : MonoBehaviour
         }
         if (isMoving)
         {
-           
+
             bool pressedShift = checkShift();
             if (pressedShift)
             {
@@ -76,7 +77,7 @@ public class CharacterScript : MonoBehaviour
                 animator.SetInteger("MoveState", 1);
             }
 
-            if(burstLeft != 0)
+            if (burstLeft != 0)
             {
                 speedFactor = 50f;
             }
@@ -94,14 +95,16 @@ public class CharacterScript : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(burstLeft > 0f)
+        if (burstLeft > 0f)
         {
             burstLeft -= Time.deltaTime;
             if (burstLeft <= 0f)
             {
                 burstLeft = 0f;
                 GameState.isBurst = false;
+                effects.Stop();
             }
+
         }
     }
 
@@ -118,6 +121,8 @@ public class CharacterScript : MonoBehaviour
         if (GameState.isBurst)
         {
             burstLeft = burstPeriod;
+            Debug.Log("START");
+            effects.Play();
         }
     }
 

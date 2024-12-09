@@ -19,6 +19,7 @@ public class SettingsScript : MonoBehaviour
     void Start()
     {
         content = transform.Find("SettingsContent").gameObject;
+        content.SetActive(!content.activeInHierarchy);
         Time.timeScale = content.activeInHierarchy ? 0.0f : 1.0f;
         OnEffectsSlider(effectsVolumeSlider.value);
         OnAmbientSlider(ambientVolumeSlider.value);
